@@ -2,7 +2,10 @@ import express, { Response, Request } from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 
-import testGeminiResponse from "./test-gemini";
+import {
+  promptResponse,
+  testGeminiResponse
+} from "./test-gemini";
 
 dotenv.config();
 
@@ -12,6 +15,12 @@ const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
 
 app.use(express.json());
 app.use(cors({ origin: FRONTEND_URL }));
+
+app.post("/prompt", async (req: Request, res: Response) => {
+  const {prompt} = req.body;
+  const output = await promptResponse(prompt);
+  res.send({message: output || {message:"No response was genereated"}} );
+});
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Server working fine");
